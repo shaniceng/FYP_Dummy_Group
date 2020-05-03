@@ -1,0 +1,3 @@
+rootProject.name='FYP_Dummy_Group'
+include ':mobile'
+include ':wear'

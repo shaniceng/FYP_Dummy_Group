@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CreateAccActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnClose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="329dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="27dp"
+            android:layout_marginBottom="32dp"
+            android:backgroundTint="#fff"
+            android:tint="#143981"
+            app:srcCompat="@drawable/icon_close" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif"
+            android:text="Create Account"
+            android:textAlignment="center"
+            android:textColor="#143981"
+            android:textSize="30sp" />
+
+        <EditText
+            android:id="@+id/editTextCreateName"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/round"
+            android:backgroundTint="#DFDBDB"
+            android:drawableLeft="@drawable/icon_person24"
+            android:drawablePadding="8dp"
+            android:drawableTint="#615F5F"
+            android:ems="10"
+            android:hint="Full Name"
+            android:inputType="textPersonName"
+            android:paddingLeft="16dp" />
+
+        <EditText
+            android:id="@+id/editTextCreateEmail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/round"
+            android:backgroundTint="#DFDBDB"
+            android:drawableLeft="@drawable/icon_email24"
+            android:drawablePadding="8dp"
+            android:drawableTint="#615F5F"
+            android:ems="10"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:paddingLeft="16dp" />
+
+        <EditText
+            android:id="@+id/editTextCreatePassword"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/round"
+            android:backgroundTint="#DFDBDB"
+            android:drawableLeft="@drawable/icon_password24"
+            android:drawablePadding="8dp"
+            android:drawableTint="#FF615F5F"
+            android:ems="10"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:paddingLeft="16dp" />
+
+        <EditText
+            android:id="@+id/etCreateAge"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/round"
+            android:backgroundTint="#DFDBDB"
+            android:drawablePadding="8dp"
+            android:drawableTint="#FF615F5F"
+            android:ems="10"
+            android:hint="Age: e.g 53"
+            android:inputType="text"
+            android:paddingLeft="16dp" />
+        <EditText
+            android:id="@+id/etCreateGender"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/round"
+            android:backgroundTint="#DFDBDB"
+            android:drawablePadding="8dp"
+            android:drawableTint="#FF615F5F"
+            android:ems="10"
+            android:hint="Gender: F/M"
+            android:inputType="text"
+            android:paddingLeft="16dp" />
+        <EditText
+            android:id="@+id/etCreateHeight"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/round"
+            android:backgroundTint="#DFDBDB"
+            android:drawablePadding="8dp"
+            android:drawableTint="#FF615F5F"
+            android:ems="10"
+            android:hint="Height in cm"
+            android:inputType="text"
+            android:paddingLeft="16dp" />
+        <EditText
+            android:id="@+id/etCreateWeight"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/round"
+            android:backgroundTint="#DFDBDB"
+            android:drawablePadding="8dp"
+            android:drawableTint="#FF615F5F"
+            android:ems="10"
+            android:hint="Weight in kg"
+            android:inputType="text"
+            android:paddingLeft="16dp" />
+        <EditText
+            android:id="@+id/etCreateBirthday"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/round"
+            android:backgroundTint="#DFDBDB"
+            android:drawablePadding="8dp"
+            android:drawableTint="#FF615F5F"
+            android:ems="10"
+            android:hint="Birthday: dd/mm/yyyy"
+            android:inputType="text"
+            android:paddingLeft="16dp" />
+
+        <Button
+            android:id="@+id/btnCreateAcc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="70dp"
+            android:background="@drawable/round"
+            android:backgroundTint="#143981"
+            android:drawableLeft="@drawable/icon_rightarrow"
+            android:drawableTint="#FFFFFF"
+            android:paddingLeft="100dp"
+            android:paddingRight="90dp"
+            android:text="Create Account"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
