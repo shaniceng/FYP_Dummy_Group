@@ -29,4 +29,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.wear:wear:1.0.0'
     compileOnly 'com.google.android.wearable:wearable:2.6.0'
+    implementation 'androidx.core:core:1.2.0'
+    implementation 'com.google.android.gms:play-services-fitness:18.0.0'
+
 }
