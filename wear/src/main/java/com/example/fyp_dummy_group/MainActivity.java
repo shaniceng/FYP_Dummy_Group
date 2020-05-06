@@ -159,6 +159,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
 
     protected void onResume() {
         super.onResume();
+        startAlarm();
         //sensorManager.registerListener(this, this.sensor, 1000);
         IntentFilter filter = new IntentFilter(AMBIENT_UPDATE_ACTION);
         registerReceiver(ambientUpdateBroadcastReceiver, filter);
@@ -170,6 +171,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     protected void onPause() {
         super.onPause();
         //finish();
+        startAlarm();
         refreshDisplayAndSetNextUpdate();
         unregisterReceiver(ambientUpdateBroadcastReceiver);
         ambientUpdateAlarmManager.cancel(ambientUpdatePendingIntent);
@@ -178,6 +180,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     @Override
     protected void onStop() {
         super.onStop();
+        startAlarm();
         refreshDisplayAndSetNextUpdate();
     }
 
@@ -275,11 +278,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     @Override
     public void onEnterAmbient(Bundle ambientDetails) {
         super.onEnterAmbient(ambientDetails);
-        if((currentTime.get(Calendar.HOUR_OF_DAY) == 00) && (currentTime.get(Calendar.MINUTE) == 01)){ //&& (currentTime.get(Calendar.SECOND) == 00)) {
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putInt(Initial_Count_Key, currentSteps);
-            editor.commit();
-        }
+        startAlarm();
         refreshDisplayAndSetNextUpdate();
     }
 
@@ -338,6 +337,47 @@ public class MainActivity extends WearableActivity implements SensorEventListene
             }
         };
         handler.postDelayed(runnable, milliseconds);
+    }
+
+    private void startAlarm() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlertReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+
+        Calendar firingCal= Calendar.getInstance();
+        Calendar currentCal = Calendar.getInstance();
+
+        firingCal.set(Calendar.HOUR_OF_DAY, 00); // At the hour you wanna fire
+        firingCal.set(Calendar.MINUTE, 00); // Particular minute
+        firingCal.set(Calendar.SECOND, 00); // particular second
+
+        long intendedTime = firingCal.getTimeInMillis();
+        long currentTime = currentCal.getTimeInMillis();
+
+        if(intendedTime >= currentTime){
+            // you can add buffer time too here to ignore some small differences in milliseconds
+            // set from today
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, intendedTime, AlarmManager.INTERVAL_DAY, pendingIntent);
+        } else{
+            // set from next day
+            // you might consider using calendar.add() for adding one day to the current day
+            firingCal.add(Calendar.DAY_OF_MONTH, 1);
+            intendedTime = firingCal.getTimeInMillis();
+
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, intendedTime, AlarmManager.INTERVAL_DAY, pendingIntent);
+        }
+    }
+    private void cancelAlarm() {
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, AlertReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0);
+        alarmManager.cancel(pendingIntent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cancelAlarm();
     }
 
 
