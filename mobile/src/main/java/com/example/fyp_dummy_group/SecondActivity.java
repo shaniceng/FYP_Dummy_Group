@@ -37,7 +37,7 @@ public class SecondActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference databaseReference, stepsDataBaseRef;
+    private DatabaseReference databaseReference, stepsDataBaseRef, maxHRDataref;
 
 
     @Override
@@ -70,6 +70,7 @@ public class SecondActivity extends AppCompatActivity {
         String date = dateFormat.format(currentDate.getTime()).replaceAll("[\\D]","");
         databaseReference = firebaseDatabase.getReference("Chart Values/" + currentuser +"/" + date);
         stepsDataBaseRef=firebaseDatabase.getReference("Steps Count/" +currentuser + "/" + date );
+        maxHRDataref = firebaseDatabase.getReference("MaxHeartRate/" +currentuser + "/" + date );
 
 
         //get Max heart rate for each individual age
@@ -95,6 +96,7 @@ public class SecondActivity extends AppCompatActivity {
 
         retrieveStepsData();
         retrieveData();
+        retrieveMaxHR();
 
     }
 
@@ -135,9 +137,8 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     private void insertStepsData() {
-        String id = stepsDataBaseRef.push().getKey();
         StepsPointValue pointSteps = new StepsPointValue(currentStepsCount);
-        stepsDataBaseRef.child(id).setValue(pointSteps);
+        stepsDataBaseRef.setValue(pointSteps);
 
         retrieveStepsData();
     }
@@ -147,10 +148,8 @@ public class SecondActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.hasChildren()){
-                    for(DataSnapshot myDataSnapshot : dataSnapshot.getChildren()){
-                        StepsPointValue stepsPointValue = myDataSnapshot.getValue(StepsPointValue.class);
+                    StepsPointValue stepsPointValue = dataSnapshot.getValue(StepsPointValue.class);
                         tv5.setText(String.valueOf(stepsPointValue.getSteps()));
-                    }
                 }else{
                     Toast.makeText(SecondActivity.this,"Error in retrieving steps", Toast.LENGTH_SHORT).show();
                 }
@@ -163,15 +162,39 @@ public class SecondActivity extends AppCompatActivity {
         });
     }
 
+    private void insertMaxHR() {
+        if(max_HeartRate!=null) {
+            MaxHRPointValue maxHRPointValue2 = new MaxHRPointValue(Integer.parseInt(max_HeartRate.replaceAll("[\\D]", "")));
+            maxHRDataref.setValue(maxHRPointValue2);
+            retrieveMaxHR();
+        }
+    }
+    private void retrieveMaxHR() {
+        maxHRDataref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue()!=null) {
+                    MaxHRPointValue maxHRPointValue = dataSnapshot.getValue(MaxHRPointValue.class);
+                    if (maxHRPointValue.getHr() != 0) {
+                        tv6.setText(maxHRPointValue.getHr() + "BPM");
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-     public class MessageReceiver extends BroadcastReceiver {
+            }
+        });
+    }
+
+
+    public class MessageReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
 
             if(intent.getStringExtra("heartRate")!=null){
                 heart = intent.getStringExtra("heartRate");
                 Log.v(TAG, "Main activity received message: " + message);
-                tv6.setText(heart);
                 currentHeartRate=Integer.parseInt(heart.replaceAll("[\\D]",""));
                 //ratedMaxHR.setText(String.valueOf(currentHeartRate));
                 insertData();
@@ -183,6 +206,10 @@ public class SecondActivity extends AppCompatActivity {
                 currentStepsCount = Integer.parseInt(steps);
                 insertStepsData();
 
+            }
+            else if(intent.getStringExtra("max_heartyRate")!=null){
+                max_HeartRate = intent.getStringExtra("max_heartyRate");
+                insertMaxHR();
             }
         }
     }
