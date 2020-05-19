@@ -8,7 +8,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 public class SecondActivity extends AppCompatActivity {
     Button logout;
@@ -38,6 +41,11 @@ public class SecondActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference, stepsDataBaseRef, maxHRDataref;
+
+    private SharedPreferences prefs;
+
+    private String date;
+    private String currentuser;
 
 
     @Override
@@ -62,9 +70,10 @@ public class SecondActivity extends AppCompatActivity {
             }
         });
 
+        prefs = PreferenceManager.getDefaultSharedPreferences(SecondActivity.this);
         firebaseDatabase= FirebaseDatabase.getInstance();
         firebaseAuth= FirebaseAuth.getInstance();
-        String currentuser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        currentuser = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Calendar currentDate = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         String date = dateFormat.format(currentDate.getTime()).replaceAll("[\\D]","");
@@ -100,16 +109,49 @@ public class SecondActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
+        MessageReceiver messageReceiver = new MessageReceiver();
+        LocalBroadcastManager.getInstance(SecondActivity.this).registerReceiver(messageReceiver, messageFilter);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+
+        // Register the local broadcast receiver
+        IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
+        MessageReceiver messageReceiver = new MessageReceiver();
+        LocalBroadcastManager.getInstance(SecondActivity.this).registerReceiver(messageReceiver, messageFilter);
+//        startThread();
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // Register the local broadcast receiver
+        IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
+        MessageReceiver messageReceiver = new MessageReceiver();
+        LocalBroadcastManager.getInstance(SecondActivity.this).registerReceiver(messageReceiver, messageFilter);
+//        startThread();
+
+    }
+
     private void insertData() {
-        String id = databaseReference.push().getKey();
-        Calendar currentTime = Calendar.getInstance();
-        SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-
-        int x = Integer.parseInt(format.format(currentTime.getTime()).replaceAll("[\\D]",""));
-        int y = currentHeartRate;
+        Calendar currentDate = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        date = dateFormat.format(currentDate.getTime()).replaceAll("[\\D]","");
+        databaseReference = firebaseDatabase.getReference("Chart Values/" + currentuser +"/");
+        String id = databaseReference.child(date).push().getKey();
+        long x=new Date().getTime();
+        int y=currentHeartRate;
         PointValue pointValue = new PointValue(x,y);
-        databaseReference.child(id).setValue(pointValue);
-
+        databaseReference.child(date).child(id).setValue(pointValue);
         retrieveData();
     }
 
@@ -192,12 +234,23 @@ public class SecondActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
 
+            if (!prefs.contains("HeartRateFromWear")) {
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("HeartRateFromWear", 0);
+                editor.commit();
+            }
             if(intent.getStringExtra("heartRate")!=null){
                 heart = intent.getStringExtra("heartRate");
                 Log.v(TAG, "Main activity received message: " + message);
                 currentHeartRate=Integer.parseInt(heart.replaceAll("[\\D]",""));
                 //ratedMaxHR.setText(String.valueOf(currentHeartRate));
-                insertData();
+
+                if(currentHeartRate!=(prefs.getInt("HeartRateFromWear",-1))) {
+                    insertData();
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putInt("HeartRateFromWear", currentHeartRate);
+                    editor.commit();
+                }
             }
             else if(intent.getStringExtra("countSteps")!=null){
                 steps = intent.getStringExtra("countSteps");

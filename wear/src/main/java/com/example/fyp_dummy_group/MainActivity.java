@@ -204,6 +204,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     public void onEnterAmbient(Bundle ambientDetails) {
         super.onEnterAmbient(ambientDetails);
         startAlarm();
+        getHartRate();
         refreshDisplayAndSetNextUpdate();
     }
 
@@ -217,6 +218,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     protected void onResume() {
         super.onResume();
         startAlarm();
+        getHartRate();
         //sensorManager.registerListener(this, this.sensor, 1000);
         IntentFilter filter = new IntentFilter(AMBIENT_UPDATE_ACTION);
         registerReceiver(ambientUpdateBroadcastReceiver, filter);
@@ -229,16 +231,22 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         super.onPause();
         //finish();
         startAlarm();
+        getHartRate();
         refreshDisplayAndSetNextUpdate();
-        unregisterReceiver(ambientUpdateBroadcastReceiver);
-        ambientUpdateAlarmManager.cancel(ambientUpdatePendingIntent);
+        IntentFilter filter = new IntentFilter(AMBIENT_UPDATE_ACTION);
+        registerReceiver(ambientUpdateBroadcastReceiver, filter);
+//        unregisterReceiver(ambientUpdateBroadcastReceiver);
+//        ambientUpdateAlarmManager.cancel(ambientUpdatePendingIntent);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         startAlarm();
-        refreshDisplayAndSetNextUpdate();
+        //refreshDisplayAndSetNextUpdate();
+        mSensorManager.unregisterListener(this);
+        unregisterReceiver(ambientUpdateBroadcastReceiver);
+        ambientUpdateAlarmManager.cancel(ambientUpdatePendingIntent);
     }
 
     class SendThread extends Thread {
