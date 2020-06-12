@@ -1,13 +1,13 @@
 package com.example.fyp_dummy_group;
 
 public class UserProfile {
-    public String userName, userEmail, userAge, userGender, userHeight, userWeight, userBirthday;
+    public String userName, userEmail, userAge, userGender, userHeight, userWeight, userBirthday, group;
 
     public UserProfile(){
 
     }
 
-    public UserProfile(String userName, String userEmail, String userAge, String userGender, String userHeight, String userWeight, String userBirthday)
+    public UserProfile(String userName, String userEmail, String userAge, String userGender, String userHeight, String userWeight, String userBirthday, String group)
     {
         this.userName=userName;
         this.userEmail=userEmail;
@@ -16,6 +16,7 @@ public class UserProfile {
         this.userHeight=userHeight;
         this.userWeight=userWeight;
         this.userBirthday=userBirthday;
+        this.group = group;
     }
 
     public String getUserEmail() {
@@ -72,5 +73,13 @@ public class UserProfile {
 
     public void setUserBirthday(String userBirthday) {
         this.userBirthday = userBirthday;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
     }
 }
