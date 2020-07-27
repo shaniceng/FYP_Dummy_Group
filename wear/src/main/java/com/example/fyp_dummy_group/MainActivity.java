@@ -112,7 +112,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     @Override
     public void onSensorChanged(SensorEvent event) {
         time = Calendar.getInstance();
-        if ((time.get(Calendar.HOUR_OF_DAY) >= 6) && (time.get(Calendar.HOUR_OF_DAY) < 22)) {
+        if ((time.get(Calendar.HOUR_OF_DAY) >= 6) && (time.get(Calendar.HOUR_OF_DAY) < 23)) {
             if (event.sensor.getType() == Sensor.TYPE_HEART_RATE) {
                 heart_msg = "" + (int) event.values[0];
                 if (heart_msg != null) {
@@ -161,17 +161,26 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     }
 
     //Send msg from wear to hp at fixed intervals
-    private static final long AMBIENT_INTERVAL_MS = TimeUnit.SECONDS.toMillis(300000);
+    private static final long AMBIENT_INTERVAL_MS = TimeUnit.SECONDS.toMillis(60);
     private void refreshDisplayAndSetNextUpdate() {
+        if(!prefs.contains("dailyCurrentSteps")){
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("dailyCurrentSteps", 0);
+            editor.commit();
+        }
+        if(!prefs.contains("previousHeartRate")){
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("previousHeartRate", 0);
+            editor.commit();
+        }
+        if(!prefs.contains("previousStepsCount")){
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("previousStepsCount", 0);
+            editor.commit();
+        }
+
         if (isAmbient()) {
             // Implement data retrieval and update the screen for ambient mode
-
-            if(!prefs.contains("previousHeartRate")){
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putInt("previousHeartRate", 0);
-                editor.commit();
-            }
-
             if(heart_msg != null && (String.valueOf(prefs.getInt("previousHeartRate",-1))!=heart_msg.replaceAll("[\\D]",""))) {
                 new MainActivity.SendThread(heartPath, heart_msg + "BPM").start();
                 new MainActivity.SendThread(maxheartpath, prefs.getInt("getMaxcurrentHeartRate", -1) + "BPM").start();
@@ -179,11 +188,22 @@ public class MainActivity extends WearableActivity implements SensorEventListene
                 editor.putInt("previousHeartRate", Integer.parseInt(heart_msg.replaceAll("[\\D]","")));
                 editor.commit();
             }
-            if(step!=null) {
-                new MainActivity.SendThread(stepsPath, String.valueOf(step)).start();
+            if((String.valueOf(prefs.getInt("dailyCurrentSteps", -1))!=null) && (prefs.getInt("previousStepsCount",-1))!=prefs.getInt("dailyCurrentSteps", -1)){
+                new MainActivity.SendThread(stepsPath, String.valueOf(prefs.getInt("dailyCurrentSteps", -1))).start();
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("previousStepsCount", prefs.getInt("dailyCurrentSteps", -1));
+                editor.commit();
             }
+
         } else {
             // Implement data retrieval and update the screen for interactive mode
+            if(heart_msg != null && (String.valueOf(prefs.getInt("previousHeartRate",-1))!=heart_msg.replaceAll("[\\D]",""))) {
+                new MainActivity.SendThread(heartPath, heart_msg + "BPM").start();
+                new MainActivity.SendThread(maxheartpath, prefs.getInt("getMaxcurrentHeartRate", -1) + "BPM").start();
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putInt("previousHeartRate", Integer.parseInt(heart_msg.replaceAll("[\\D]","")));
+                editor.commit();
+            }
         }
         long timeMs = System.currentTimeMillis();
         // Schedule a new alarm

@@ -46,6 +46,8 @@ public class SecondActivity extends AppCompatActivity {
 
     private String date;
     private String currentuser;
+    IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
+    MessageReceiver messageReceiver = new MessageReceiver();
 
 
     @Override
@@ -75,7 +77,7 @@ public class SecondActivity extends AppCompatActivity {
         firebaseAuth= FirebaseAuth.getInstance();
         currentuser = FirebaseAuth.getInstance().getCurrentUser().getUid();
         Calendar currentDate = Calendar.getInstance();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         String date = dateFormat.format(currentDate.getTime()).replaceAll("[\\D]","");
         databaseReference = firebaseDatabase.getReference("Chart Values/" + currentuser +"/" + date);
         stepsDataBaseRef=firebaseDatabase.getReference("Steps Count/" +currentuser + "/" + date );
@@ -112,8 +114,7 @@ public class SecondActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
-        MessageReceiver messageReceiver = new MessageReceiver();
+
         LocalBroadcastManager.getInstance(SecondActivity.this).registerReceiver(messageReceiver, messageFilter);
     }
 
@@ -123,10 +124,9 @@ public class SecondActivity extends AppCompatActivity {
 
 
         // Register the local broadcast receiver
-        IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
-        MessageReceiver messageReceiver = new MessageReceiver();
+//
         LocalBroadcastManager.getInstance(SecondActivity.this).registerReceiver(messageReceiver, messageFilter);
-//        startThread();
+        //startThread();
 
     }
 
@@ -135,8 +135,6 @@ public class SecondActivity extends AppCompatActivity {
         super.onPause();
 
         // Register the local broadcast receiver
-        IntentFilter messageFilter = new IntentFilter(Intent.ACTION_SEND);
-        MessageReceiver messageReceiver = new MessageReceiver();
         LocalBroadcastManager.getInstance(SecondActivity.this).registerReceiver(messageReceiver, messageFilter);
 //        startThread();
 
@@ -144,7 +142,7 @@ public class SecondActivity extends AppCompatActivity {
 
     private void insertData() {
         Calendar currentDate = Calendar.getInstance();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
         date = dateFormat.format(currentDate.getTime()).replaceAll("[\\D]","");
         databaseReference = firebaseDatabase.getReference("Chart Values/" + currentuser +"/");
         String id = databaseReference.child(date).push().getKey();
