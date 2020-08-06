@@ -62,15 +62,15 @@ public class SecondActivity extends AppCompatActivity {
         tv5=findViewById(R.id.textView5);
         tv6=findViewById(R.id.textView6);
 
-        logout = findViewById(R.id.btnLogout);
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                firebaseAuth.signOut();
-                finish();
-                startActivity(new Intent(SecondActivity.this, MainActivity.class));
-            }
-        });
+        //logout = findViewById(R.id.btnLogout);
+//        logout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                firebaseAuth.signOut();
+//                finish();
+//                startActivity(new Intent(SecondActivity.this, MainActivity.class));
+//            }
+//        });
 
         prefs = PreferenceManager.getDefaultSharedPreferences(SecondActivity.this);
         firebaseDatabase= FirebaseDatabase.getInstance();
